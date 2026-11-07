@@ -1,0 +1,396 @@
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Microsoft YaHei','PingFang SC',sans-serif;background:#f0f2f5;color:#333;overflow:hidden;height:100vh}
+.header{background:linear-gradient(135deg,#1a73e8,#0d47a1);color:#fff;padding:15px 28px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(0,0,0,.15);z-index:100;position:relative}
+.header-title{font-size:20px;font-weight:600;letter-spacing:1px}
+.header-city{font-size:13px;background:rgba(255,255,255,.15);padding:5px 16px;border-radius:16px;cursor:pointer;transition:background .2s;user-select:none}
+.header-city:hover{background:rgba(255,255,255,.25)}
+.layout{display:flex;height:calc(100vh - 55px)}
+.panel{width:420px;min-width:420px;background:#fff;display:flex;flex-direction:column;border-right:1px solid #e0e0e0;overflow:hidden}
+.tabs{display:flex;border-bottom:1px solid #e8e8e8;background:#fafafa;flex-shrink:0}
+.tab{flex:1;padding:11px 4px;text-align:center;cursor:pointer;font-size:13px;color:#666;border-bottom:2px solid transparent;transition:all .2s;user-select:none}
+.tab:hover{background:#f0f0f0}
+.tab.active{color:#1a73e8;border-bottom-color:#1a73e8;font-weight:600;background:#fff}
+.tab .badge{display:inline-block;background:#e53935;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:3px}
+.tab-panel{display:none;flex-direction:column;height:100%}
+.tab-panel.active{display:flex}
+.city-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.city-modal{background:#fff;border-radius:16px;width:90%;max-width:820px;max-height:85vh;overflow-y:auto;padding:30px 32px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.city-modal h2{font-size:22px;text-align:center;margin-bottom:4px;color:#1a73e8}
+.city-subtitle{text-align:center;color:#888;font-size:13px;margin-bottom:20px}
+.city-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px}
+.city-card{padding:14px 10px;border:2px solid #e8e8e8;border-radius:12px;cursor:pointer;text-align:center;transition:all .25s;background:#fafafa}
+.city-card:hover{border-color:#1a73e8;background:#e8f0fe;transform:translateY(-2px);box-shadow:0 4px 12px rgba(26,115,232,.15)}
+.city-card .cicon{font-size:30px;margin-bottom:4px}
+.city-card .cname{font-size:16px;font-weight:600;color:#222}
+.city-card .cen{font-size:11px;color:#999;margin-top:1px}
+.city-card .cdesc{font-size:11px;color:#aaa;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec-bar{padding:8px 14px;background:#fffbeb;border-bottom:1px solid #fde68a;display:flex;align-items:center;gap:10px;flex-shrink:0;font-size:12px;color:#92400e}
+.rec-bar button{padding:4px 12px;background:#f59e0b;color:#fff;border:none;border-radius:12px;cursor:pointer;font-size:11px;white-space:nowrap}
+.rec-bar button:hover{background:#d97706}
+.search-box{padding:10px 14px;border-bottom:1px solid #eee;display:flex;gap:6px;flex-shrink:0;background:#fff;flex-wrap:wrap;align-items:center}
+.search-box input{flex:1;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px;outline:none;min-width:80px}
+.search-box input:focus{border-color:#1a73e8}
+.search-types{display:flex;gap:3px}
+.stype{padding:7px 10px;border:1px solid #ddd;border-radius:5px;background:#fff;cursor:pointer;font-size:12px;color:#555;transition:all .2s;white-space:nowrap}
+.stype:hover{border-color:#1a73e8;color:#1a73e8}
+.stype.active{background:#1a73e8;color:#fff;border-color:#1a73e8}
+.sbtn{padding:7px 14px;background:#1a73e8;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:13px;white-space:nowrap}
+.sbtn:hover{background:#1557b0}
+.results{flex:1;overflow-y:auto;padding:4px 0}
+.empty{padding:40px 16px;text-align:center;color:#999;font-size:13px}
+.empty .empty-icon{font-size:40px;margin-bottom:6px}
+.empty-sub{font-size:11px;color:#ccc;margin-top:2px}
+.ri{display:flex;padding:10px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer;transition:background .15s;gap:10px;align-items:flex-start}
+.ri:hover{background:#f5f8ff}
+.ri.selected{background:#e8f0fe}
+.ri.rec{border-left:3px solid #f59e0b}
+.ri-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ri-icon.scenic{background:#e3f2fd;color:#1565c0}
+.ri-icon.food{background:#fff3e0;color:#e65100}
+.ri-info{flex:1;min-width:0}
+.ri-name{font-size:14px;font-weight:600;color:#222}
+.ri-name .rec-tag{display:inline-block;font-size:10px;background:#f59e0b;color:#fff;padding:0 6px;border-radius:4px;margin-left:4px;vertical-align:middle}
+.ri-addr{font-size:11px;color:#999;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ri-rating{color:#f59e0b;font-size:11px;margin-top:1px}
+.ri-tags{margin-top:3px;display:flex;gap:3px;flex-wrap:wrap}
+.ri-tag{font-size:10px;padding:1px 7px;border-radius:8px;background:#f5f5f5;color:#666}
+.ri-tag.type{background:#e3f2fd;color:#1565c0}
+.ri-tag.type.food{background:#fff3e0;color:#e65100}
+.ri-add{padding:4px 12px;border-radius:12px;border:1px solid #1a73e8;background:#fff;color:#1a73e8;cursor:pointer;font-size:11px;white-space:nowrap;flex-shrink:0;margin-top:1px;transition:all .2s}
+.ri-add:hover{background:#1a73e8;color:#fff}
+.ri-add.added{background:#e8f0fe;border-color:#34a853;color:#34a853;cursor:default}
+.sel-head{padding:8px 14px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:#fafafa}
+.sel-count{font-size:12px;color:#888}
+.clear-btn{padding:3px 10px;background:none;border:1px solid #e53935;color:#e53935;border-radius:12px;cursor:pointer;font-size:11px}
+.clear-btn:hover{background:#e53935;color:#fff}
+.sel-list{padding:4px 0;overflow-y:auto;flex:1}
+.si{display:flex;padding:8px 14px;border-bottom:1px solid #f0f0f0;align-items:center;gap:10px}
+.si-info{flex:1;min-width:0}
+.si-name{font-size:13px;font-weight:500}
+.si-name .rec-tag2{font-size:10px;color:#f59e0b}
+.si-type{font-size:11px;color:#999;margin-top:1px}
+.si-rating{color:#f59e0b;font-size:11px}
+.si-del{color:#e53935;background:none;border:none;cursor:pointer;font-size:16px;padding:2px;opacity:.5;transition:opacity .2s}
+.si-del:hover{opacity:1}
+.settings{padding:14px;overflow-y:auto;flex:1}
+.sg{margin-bottom:16px}
+.sg-title{font-size:13px;font-weight:600;color:#555;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #eee}
+.sr{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.sr label{font-size:12px;color:#666;min-width:65px}
+.sr input[type="number"],.sr select{padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;outline:none;width:85px}
+.sr input:focus,.sr select:focus{border-color:#1a73e8}
+.sr input[type="time"]{padding:6px 8px;border:1px solid #ddd;border-radius:5px;font-size:12px}
+.sr .hint{font-size:11px;color:#aaa}
+.sg-hint{font-size:11px;color:#aaa;margin:-4px 0 8px}
+.modes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.mode{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border:1px solid #e0e0e0;border-radius:16px;font-size:12px;color:#555;cursor:pointer;background:#fafafa;transition:all .15s}
+.mode:hover{border-color:#1a73e8;background:#f0f5ff}
+.mode:has(input:checked){border-color:#1a73e8;background:#e8f0fe;color:#1a73e8;font-weight:500}
+.mode input[type="checkbox"],.mode input[type="radio"]{width:14px;height:14px;accent-color:#1a73e8;cursor:pointer}
+.sr input[type="range"]{width:110px;accent-color:#1a73e8}
+.sr input[type="text"]{padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:13px;outline:none;width:150px}
+.sr input[type="text"]:focus{border-color:#1a73e8}
+.auto-fill{color:#1a73e8;cursor:pointer}
+.auto-fill:hover{text-decoration:underline}
+.tr{display:flex;align-items:center;gap:5px}
+.tr span{color:#999;font-size:12px}
+.cr{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.cr input[type="checkbox"]{width:15px;height:15px;accent-color:#1a73e8}
+.cr label{font-size:12px;color:#555;cursor:pointer}
+.gen-btn{display:block;width:100%;padding:12px;background:linear-gradient(135deg,#1a73e8,#0d47a1);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px;transition:transform .2s,box-shadow .2s}
+.gen-btn:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,115,232,.3)}
+.gen-btn:disabled{background:#ccc;cursor:not-allowed;transform:none;box-shadow:none}
+.gen-sub{text-align:center;font-size:11px;color:#999;margin-top:4px}
+.itin-header{padding:12px 14px;background:linear-gradient(135deg,#1a73e8,#0d47a1);color:#fff;flex-shrink:0}
+.itin-header h3{font-size:14px}
+.itin-header .itin-summary{font-size:11px;opacity:.85;margin-top:2px}
+.itin-body{flex:1;overflow-y:auto;padding:6px 0}
+.dc{margin:6px 10px;border-radius:10px;overflow:hidden;border:1px solid #e8e8e8;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.dc-head{padding:10px 14px;background:#f8f9fa;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center}
+.dc-head .dc-num{font-size:14px;font-weight:600;color:#1a73e8}
+.dc-head .dc-date{font-size:11px;color:#888}
+.dc-head .dc-stats{font-size:11px;color:#999}
+.dc-body{padding:6px 14px}
+.rs{display:flex;padding:6px 0;gap:10px;align-items:flex-start}
+.rs .rs-mk{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:600;flex-shrink:0;margin-top:2px}
+.rs .rs-mk.start{background:#34a853}
+.rs .rs-mk.attr{background:#1a73e8}
+.rs .rs-mk.food{background:#f59e0b}
+.rs .rs-mk.end{background:#e53935}
+.rs .rs-mk.transit{background:#999;font-size:10px}
+.rs-info{flex:1;min-width:0}
+.rs-name{font-size:13px;font-weight:500}
+.rs-detail{font-size:11px;color:#999;margin-top:1px}
+.rs-time{font-size:11px;color:#1a73e8;margin-top:1px}
+.conn{width:2px;height:10px;background:#ddd;margin-left:12px}
+.map-area{flex:1;position:relative;background:#e8e8e8}
+#mapContainer{width:100%;height:100%}
+.map-loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.95);padding:18px 26px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.15);text-align:center;z-index:10}
+.spinner{width:32px;height:32px;border:3px solid #e0e0e0;border-top-color:#1a73e8;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.map-popup{font-size:12px;max-width:200px}
+.map-popup .pp-name{font-weight:600;font-size:13px;color:#222}
+.map-popup .pp-addr{color:#888;font-size:11px;margin-top:1px}
+.map-popup .pp-type{display:inline-block;padding:0 7px;border-radius:7px;font-size:10px;margin-top:3px}
+.map-popup .pp-type.scenic{background:#e3f2fd;color:#1565c0}
+.map-popup .pp-type.food{background:#fff3e0;color:#e65100}
+.export-btn{padding:6px 14px;background:#fff;border:none;border-radius:5px;color:#1a73e8;cursor:pointer;font-size:12px;font-weight:500}
+.export-btn:hover{background:rgba(255,255,255,.15)}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:10px 22px;border-radius:8px;font-size:13px;z-index:99999;transition:opacity .3s;opacity:0;pointer-events:none;max-width:80vw;text-align:center}
+@media(max-width:768px){
+.layout{flex-direction:column}
+.panel{width:100%;min-width:auto;height:45vh;border-right:none;border-bottom:1px solid #e0e0e0}
+.map-area{height:55vh}
+.header{padding:10px 14px}
+.header-title{font-size:16px}
+.city-modal{padding:18px;width:95%}
+.city-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.city-card{padding:10px 6px}
+.city-card .cname{font-size:14px}
+}
+.city-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.city-modal-head h2{margin-bottom:0}
+.city-close{background:none;border:none;font-size:22px;cursor:pointer;color:#999;padding:4px 8px;border-radius:6px;transition:all .2s;line-height:1}
+.city-close:hover{background:#f0f0f0;color:#333}
+.city-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+/* override: hidden by default, shown via JS */
+.city-overlay{display:none}
+.sidebar-content{flex:1;overflow-y:auto;padding:0;min-height:0}
+#itineraryView{display:flex;flex-direction:column;flex:1;min-height:0}
+#itineraryContent{display:flex;flex-direction:column;flex:1;min-height:0}
+/* selected items - beautify */
+.si{border-bottom:1px solid #f0f0f0;padding:0}
+.si-inner{display:flex;padding:10px 14px;align-items:center;gap:10px;transition:background .15s}
+.si-inner:hover{background:#f8f9fa}
+.si .si-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.si .si-icon.scenic{background:linear-gradient(135deg,#e3f2fd,#bbdefb);color:#1565c0}
+.si .si-icon.food{background:linear-gradient(135deg,#fff3e0,#ffe0b2);color:#e65100}
+.si-info{flex:1;min-width:0}
+.si-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.si-name{font-size:14px;font-weight:600;color:#222}
+.si-badge{font-size:9px;padding:1px 7px;border-radius:8px;font-weight:500}
+.si-badge.scenic{background:#e3f2fd;color:#1565c0}
+.si-badge.food{background:#fff3e0;color:#e65100}
+.si-badge.rec{background:#f59e0b;color:#fff}
+.si-addr{font-size:11px;color:#999;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.si-bottom{display:flex;align-items:center;gap:8px;margin-top:3px}
+.si-stars{color:#f59e0b;font-size:11px}
+.si-num{font-size:11px;color:#888;background:#f0f0f0;padding:0 6px;border-radius:4px}
+.si-del{width:28px;height:28px;border:none;background:#f5f5f5;border-radius:50%;color:#e53935;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;opacity:.6}
+.si-del:hover{opacity:1;background:#ffebee}
+/* search result categories */
+.cat-header{padding:8px 14px 4px;font-size:13px;font-weight:600;color:#555;background:#fafafa;border-bottom:1px solid #eee;display:flex;align-items:center;gap:6px}
+.cat-header .cat-count{font-size:11px;color:#999;font-weight:400}
+.cat-divider{height:6px;background:#f5f5f5;border-bottom:1px solid #eee}
+.results>:first-child.cat-header{border-top:none}
+/* ri (result item) improvement */
+.ri{padding:10px 14px;gap:10px}
+.ri .ri-icon{width:38px;height:38px;border-radius:10px;font-size:18px}
+.ri .ri-icon.scenic{background:linear-gradient(135deg,#e3f2fd,#bbdefb);color:#1565c0}
+.ri .ri-icon.food{background:linear-gradient(135deg,#fff3e0,#ffe0b2);color:#e65100}
+.ri-name{font-size:14px}
+.ri-addr{font-size:11px;margin-top:2px}
+.ri-rating{margin-top:2px}
+.ri-tags{margin-top:2px}
+/* day card scroll fix */
+.dc-body{max-height:none;overflow:visible}
+/* fix flex layout for scrolling */
+.sidebar-content{overflow:hidden;display:flex;flex-direction:column}
+.tab-panel{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+.tab-panel.active{display:flex}
+.itin-body{flex:1;overflow-y:auto;min-height:0;padding:6px 0}
+.results{flex:1;overflow-y:auto;padding:4px 0;min-height:0}
+.sel-list{padding:4px 0;overflow-y:auto;flex:1;min-height:0}
+.settings{padding:14px;overflow-y:auto;flex:1;min-height:0}
+/* results header */
+.cat-header{padding:8px 14px 4px;font-size:13px;font-weight:600;color:#555;background:#fafafa;border-bottom:1px solid #eee;display:flex;align-items:center;gap:6px;position:sticky;top:0;z-index:1}
+.cat-header .cat-count{font-size:11px;color:#999;font-weight:400;margin-left:auto}
+.cat-divider{height:8px;background:#f5f5f5}
+/* wider sidebar, smaller map ratio */
+.panel{width:500px;min-width:500px}
+/* responsive */
+@media(max-width:800px){.panel{width:100%;min-width:auto}}
+/* city bar - prominent */
+.city-bar{background:linear-gradient(135deg,#e8f0fe,#d2e3fc);border-bottom:2px solid #1a73e8;cursor:pointer;transition:all .2s;flex-shrink:0;padding:10px 16px 8px;text-align:center}
+.city-bar:hover{background:linear-gradient(135deg,#d2e3fc,#bbd7fb)}
+.city-bar-inner{display:flex;align-items:center;justify-content:center;gap:8px}
+.city-bar-icon{font-size:22px}
+.city-bar-text{font-size:18px;font-weight:700;color:#1a73e8;letter-spacing:.5px}
+.city-bar-arrow{font-size:12px;color:#1a73e8;opacity:.6}
+.city-bar-sub{font-size:11px;color:#5a8fd4;margin-top:3px}
+/* wider sidebar */
+.panel{width:55%;min-width:450px;max-width:700px}
+@media(max-width:900px){.panel{width:100%;max-width:100%;min-width:auto}}
+/* fix layout height - use flex to auto-calculate */
+body{display:flex;flex-direction:column;height:100vh}
+.layout{display:flex;flex:1;min-height:0}
+/* city search in modal */
+.city-search-area{display:flex;gap:6px;margin:0 0 10px;padding:0}
+.city-search-area input{flex:1;padding:9px 14px;border:2px solid #1a73e8;border-radius:8px;font-size:14px;outline:none}
+.city-search-area input:focus{border-color:#0d47a1;box-shadow:0 0 0 3px rgba(26,115,232,.15)}
+.city-search-btn{padding:9px 18px;background:#1a73e8;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;white-space:nowrap}
+.city-search-btn:hover{background:#0d47a1}
+.city-search-results{margin:0 0 6px;max-height:180px;overflow-y:auto}
+.city-search-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid #e8e8e8;border-radius:8px;margin-bottom:4px;cursor:pointer;transition:all .2s;background:#fafafa}
+.city-search-item:hover{border-color:#1a73e8;background:#e8f0fe}
+.city-search-item .csi-icon{font-size:18px}
+.city-search-item .csi-name{font-size:15px;font-weight:600;color:#222;flex:1}
+.city-search-item .csi-action{font-size:11px;color:#1a73e8;background:#e8f0fe;padding:2px 10px;border-radius:10px}
+.city-search-status{padding:8px 0;text-align:center;color:#999;font-size:13px}
+.city-search-or{text-align:center;font-size:12px;color:#999;margin:8px 0 10px;padding:6px 0;border-top:1px solid #eee;position:relative}
+.city-search-or::before{content:'';position:absolute;left:0;right:0;top:-1px;height:1px;background:#eee}
+/* ========== POI Detail Modal ========== */
+.detail-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:9998;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.detail-modal{background:#fff;border-radius:14px;width:90%;max-width:560px;max-height:80vh;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
+.detail-head{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid #eee;flex-shrink:0;gap:8px}
+.detail-head-info{display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0}
+.detail-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.detail-icon.scenic{background:linear-gradient(135deg,#e3f2fd,#bbdefb)}
+.detail-icon.food{background:linear-gradient(135deg,#fff3e0,#ffe0b2)}
+.detail-head h3{font-size:17px;font-weight:700;color:#222;margin:0;line-height:1.3}
+.detail-badge{display:inline-block;font-size:10px;padding:2px 10px;border-radius:10px;font-weight:600;margin-top:3px}
+.detail-badge.scenic{background:#e3f2fd;color:#1565c0}
+.detail-badge.food{background:#fff3e0;color:#e65100}
+.detail-body{flex:1;overflow-y:auto;padding:12px 18px 18px;min-height:100px}
+.detail-loading{text-align:center;padding:30px 0;color:#999;font-size:14px}
+.detail-section{margin-bottom:14px}
+.detail-section-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;margin-bottom:6px;letter-spacing:.5px}
+.detail-info-row{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;color:#555}
+.detail-info-row .label{color:#999;min-width:50px}
+.detail-stars{color:#f59e0b;font-size:14px;letter-spacing:1px}
+.detail-big-number{font-size:28px;font-weight:700;color:#1a73e8}
+.detail-rating-box{display:flex;align-items:center;gap:16px;padding:10px 14px;background:#f8f9fa;border-radius:10px;margin-bottom:10px}
+.detail-rating-left{text-align:center;min-width:70px}
+.detail-rating-left .num{font-size:32px;font-weight:700;color:#1a73e8;line-height:1}
+.detail-rating-left .label{font-size:11px;color:#999}
+.detail-rating-right{flex:1}
+.detail-rating-right .score{font-size:13px;color:#555;margin-bottom:2px}
+.detail-rating-right .stars{color:#f59e0b;font-size:16px}
+.detail-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.detail-tag{font-size:11px;padding:3px 10px;background:#f0f0f0;border-radius:12px;color:#666}
+
+/* reviews */
+.detail-reviews{margin-top:4px}
+.detail-review-item{padding:10px 0;border-bottom:1px solid #f0f0f0}
+.detail-review-item:last-child{border-bottom:none}
+.review-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.review-avatar{width:28px;height:28px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#888;flex-shrink:0}
+.review-name{font-size:12px;font-weight:600;color:#333}
+.review-time{font-size:10px;color:#bbb;margin-left:auto}
+.review-stars{font-size:11px;color:#f59e0b;margin-bottom:2px}
+.review-content{font-size:13px;color:#555;line-height:1.5}
+.review-empty{text-align:center;padding:20px 0;color:#bbb;font-size:13px}
+.no-more{text-align:center;padding:8px 0;color:#ccc;font-size:11px}
+
+/* detail link */
+.detail-links{margin-top:10px;display:flex;gap:8px}
+.detail-link-btn{flex:1;padding:8px;text-align:center;border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s;border:none;text-decoration:none}
+.detail-link-btn.primary{background:#1a73e8;color:#fff}
+.detail-link-btn.primary:hover{background:#0d47a1}
+.detail-link-btn.secondary{background:#f0f0f0;color:#555}
+.detail-link-btn.secondary:hover{background:#e0e0e0}
+.detail-link-btn .small{font-size:10px;opacity:.7;display:block;margin-top:1px}
+.detail-address{font-size:13px;color:#666;margin:2px 0;padding:4px 0}
+.detail-phone{font-size:13px;color:#1a73e8;margin:2px 0;padding:4px 0}
+.detail-phone a{color:#1a73e8;text-decoration:none}
+.detail-phone a:hover{text-decoration:underline}
+@media(max-width:600px){.detail-modal{width:95%;max-height:90vh;border-radius:12px}}
+/* ========== 地图工具栏 ========== */
+.map-toolbar{position:absolute;top:10px;left:10px;z-index:8;display:flex;gap:6px;align-items:center;background:rgba(255,255,255,.96);padding:6px 10px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.15);font-size:12px}
+.map-toolbar button{padding:5px 12px;border:1px solid #1a73e8;background:#fff;color:#1a73e8;border-radius:16px;cursor:pointer;font-size:12px;transition:all .2s;white-space:nowrap}
+.map-toolbar button:hover{background:#1a73e8;color:#fff}
+.map-toolbar-info{color:#888;font-size:12px;margin-left:4px}
+.map-toolbar-info b{color:#1a73e8}
+/* ========== 地图路线图例 ========== */
+.map-legend{position:absolute;right:10px;bottom:20px;z-index:8;background:rgba(255,255,255,.96);border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.18);padding:10px 12px;font-size:12px;min-width:130px}
+.legend-title{font-weight:600;color:#444;margin-bottom:6px;font-size:12px}
+.legend-item{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px;cursor:pointer;color:#555;transition:background .15s;user-select:none}
+.legend-item:hover{background:#e8f0fe;color:#1a73e8}
+.legend-item.legend-all{border-top:1px solid #f0f0f0;margin-top:4px;padding-top:7px;color:#1a73e8;font-weight:500}
+.legend-dot{width:14px;height:6px;border-radius:3px;flex-shrink:0}
+/* ========== 搜索结果操作按钮 ========== */
+.ri-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0;margin-top:1px}
+.ri-detail{padding:4px 10px;border-radius:12px;border:1px solid #9aa7b8;background:#fff;color:#5a6b7d;cursor:pointer;font-size:10px;white-space:nowrap;transition:all .2s}
+.ri-detail:hover{background:#eef2f6;color:#333}
+/* ========== 地图气泡操作按钮 ========== */
+.pp-rating{display:block;color:#f59e0b;font-size:11px;margin-top:3px}
+.pp-actions{display:flex;gap:6px;margin-top:9px}
+.pp-btn{flex:1;padding:6px 4px;border:none;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s}
+.pp-btn.primary{background:#1a73e8;color:#fff}
+.pp-btn.primary:hover{background:#0d47a1}
+.pp-btn{border:1px solid #1a73e8;background:#fff;color:#1a73e8}
+.pp-btn:hover{background:#e8f0fe}
+.pp-btn.selected{background:#e8f0fe;border-color:#34a853;color:#34a853;cursor:default}
+/* ========== 行程页地图按钮 ========== */
+.itin-map-btn{position:absolute;top:10px;right:10px;padding:5px 12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:14px;cursor:pointer;font-size:11px;transition:all .2s}
+.itin-map-btn:hover{background:rgba(255,255,255,.35)}
+#itinHeader{position:relative}
+/* ========== 住址地图选点 ========== */
+.home-row{align-items:flex-start}
+.home-wrap{flex:1;min-width:180px;display:flex;flex-direction:column;gap:6px}
+.home-btns{display:flex;gap:6px;flex-wrap:wrap}
+.home-btn{padding:6px 12px;border:1px solid #8e24aa;background:#f6eefb;color:#8e24aa;border-radius:16px;font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.home-btn:hover{background:#8e24aa;color:#fff}
+.home-btn.active{background:#8e24aa;color:#fff;animation:homePulse 1.2s infinite}
+@keyframes homePulse{0%,100%{box-shadow:0 0 0 0 rgba(142,36,170,.4)}50%{box-shadow:0 0 0 6px rgba(142,36,170,0)}}
+.home-btn.danger{border-color:#e53935;background:#fdecea;color:#e53935}
+.home-btn.danger:hover{background:#e53935;color:#fff}
+.home-info{font-size:11px;color:#888;line-height:1.5;word-break:break-all}
+.home-info b{color:#8e24aa}
+.home-search{background:#faf7fc;border:1px dashed #c9a8e3;border-radius:8px;padding:8px}
+.hs-row{display:flex;gap:6px}
+.hs-row input{flex:1;padding:6px 10px;border:1px solid #ddd;border-radius:5px;font-size:12px;outline:none;min-width:0}
+.hs-row input:focus{border-color:#8e24aa}
+.hs-btn{padding:6px 12px;border:none;background:#8e24aa;color:#fff;border-radius:5px;font-size:12px;cursor:pointer;flex-shrink:0}
+.hs-btn:hover{background:#6d1b8e}
+.hs-list{margin-top:6px;max-height:150px;overflow-y:auto}
+.hs-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;cursor:pointer;transition:background .15s}
+.hs-item:hover{background:#f0e6fb}
+.hs-ico{font-size:14px;flex-shrink:0}
+.hs-info{flex:1;min-width:0}
+.hs-name{font-size:12px;color:#333;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-addr{font-size:11px;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-action{font-size:11px;color:#8e24aa;white-space:nowrap;flex-shrink:0}
+.hs-status{font-size:11px;color:#999;padding:4px 0}
+.hs-hint{font-size:11px;color:#bbb;margin-top:4px}
+/* 地图选点提示条与确认卡 */
+.home-pick-banner{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:9;background:rgba(142,36,170,.95);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;display:flex;align-items:center;gap:10px;box-shadow:0 2px 12px rgba(0,0,0,.25);white-space:nowrap}
+.home-pick-banner button{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:12px;padding:2px 10px;font-size:11px;cursor:pointer}
+.home-pick-banner button:hover{background:rgba(255,255,255,.35)}
+.home-confirm{position:absolute;left:50%;bottom:60px;transform:translateX(-50%);z-index:9;background:#fff;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.25);padding:14px 18px;width:340px;max-width:90%}
+.hc-title{font-size:13px;font-weight:600;color:#333;margin-bottom:6px}
+.hc-addr{font-size:12px;color:#555;background:#f5f5f5;border-radius:6px;padding:8px 10px;margin-bottom:10px;word-break:break-all;line-height:1.5}
+.hc-btns{display:flex;gap:8px}
+.hc-ok{flex:1;padding:8px;border:none;border-radius:6px;background:#8e24aa;color:#fff;font-size:13px;cursor:pointer}
+.hc-ok:hover{background:#6d1b8e}
+.hc-no{flex:1;padding:8px;border:1px solid #ddd;border-radius:6px;background:#fff;color:#666;font-size:13px;cursor:pointer}
+.hc-no:hover{background:#f5f5f5}
+.legend-home{border-bottom:1px solid #f0f0f0;margin-bottom:4px;padding-bottom:6px;color:#8e24aa;font-weight:500}
+/* ========== 行程总览统计卡 ========== */
+.itin-stats{display:flex;margin:8px 10px 2px;background:#fff;border:1px solid #e8e8e8;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);flex-shrink:0}
+.itin-stats .is-item{flex:1;text-align:center;padding:9px 4px;border-right:1px solid #f0f0f0}
+.itin-stats .is-item:last-child{border-right:none}
+.itin-stats .is-item b{display:block;font-size:15px;color:#1a73e8}
+.itin-stats .is-item span{font-size:10px;color:#999}
+.itin-budget{margin:4px 10px 6px;padding:8px 12px;background:#fffdf5;border:1px dashed #f0c36d;border-radius:8px;font-size:12px;color:#8a6d1a;line-height:1.5;flex-shrink:0}
+.itin-budget b{color:#e65100}
+.weather-tag{display:inline-block;margin-left:6px;font-size:10px;padding:1px 7px;background:#e8f0fe;color:#1a73e8;border-radius:10px;vertical-align:middle}
+/* ========== 生成中遮罩 ========== */
+.gen-loading{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,.72);backdrop-filter:blur(2px);z-index:99990;display:flex;align-items:center;justify-content:center}
+.gl-box{text-align:center;color:#333;font-size:14px}
+.gl-box .spinner{margin:0 auto 14px}
+/* ========== 打印样式 ========== */
+@media print {
+  body{overflow:visible;height:auto;display:block;background:#fff}
+  .header{box-shadow:none}
+  .header-city,.export-btn,.tabs,.map-area,.city-overlay,.detail-overlay,.toast,.gen-loading,.map-toolbar,.map-legend,.home-pick-banner,.home-confirm{display:none!important}
+  .layout{display:block;height:auto}
+  .panel{width:100%;min-width:0;max-width:none;border:none;height:auto;overflow:visible}
+  .tab-panel{display:none!important}
+  #panelItinerary{display:block!important}
+  #itineraryView{display:block}
+  #itineraryContent{display:block}
+  .itin-body{overflow:visible;max-height:none}
+  .dc{break-inside:avoid;box-shadow:none;border-color:#ddd}
+  .itin-map-btn{display:none!important}
+}

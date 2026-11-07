@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>多日旅游行程规划系统</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="city-overlay" id="cityOverlay" onclick="if(event.target===this)hideCitySelect()">
+  <div class="city-modal">
+    <div class="city-modal-head">
+      <h2>🗺️ 选择旅游目的地</h2>
+      <button class="city-close" onclick="hideCitySelect()">✕</button>
+    </div>
+    <p class="city-subtitle">搜索任意城市，或从热门城市中快速选择</p>
+    <div class="city-search-area">
+      <input type="text" id="citySearchInput" placeholder="输入任意城市名称，如 黄山、洛阳、珠海..." onkeydown="if(event.key==='Enter')searchCity()">
+      <button class="city-search-btn" onclick="searchCity()">🔍 搜索</button>
+    </div>
+    <div class="city-search-results" id="citySearchResults"></div>
+    <div class="city-search-or">🏙️ 热门旅游城市</div>
+    <div class="city-grid" id="cityGrid"></div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-title">🗺️ 多日旅游行程规划</div>
+  <button class="export-btn" id="exportBtn" onclick="exportItinerary()" style="display:none">📋 导出</button>
+</div>
+
+<div class="city-bar" id="cityBar" onclick="showCitySelect()">
+  <div class="city-bar-inner">
+    <span class="city-bar-icon">📍</span>
+    <span class="city-bar-text" id="cityBarText">👆 点击选择旅游城市</span>
+    <span class="city-bar-arrow">▾</span>
+  </div>
+  <div class="city-bar-sub" id="cityBarSub">选择城市后自动推荐高评分景点和美食</div>
+</div>
+
+<div class="layout">
+<div class="panel">
+<div class="tabs">
+  <div class="tab active" data-tab="search" onclick="switchTab('search')">🔍 推荐</div>
+  <div class="tab" data-tab="selected" onclick="switchTab('selected')">📌 已选 <span class="badge" id="badgeSelected">0</span></div>
+  <div class="tab" data-tab="settings" onclick="switchTab('settings')">⚙️ 设置</div>
+  <div class="tab" data-tab="itinerary" onclick="switchTab('itinerary')">📅 行程</div>
+</div>
+
+<div class="tab-panel active" id="panelSearch">
+  <div class="rec-bar" id="recBar"><span>✨ <b id="cityRecName">请选择城市</b> 热门推荐</span><button onclick="loadRecommended()">🔄 刷新</button></div>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜景点、美食..." onkeydown="if(event.key==='Enter')doSearch()">
+    <div class="search-types">
+      <button class="stype active" data-type="all" onclick="setSType(this,'all')">全部</button>
+      <button class="stype" data-type="scenic" onclick="setSType(this,'scenic')">🏛️景点</button>
+      <button class="stype" data-type="food" onclick="setSType(this,'food')">🍜美食</button>
+    </div>
+    <button class="sbtn" onclick="doSearch()">搜索</button>
+  </div>
+  <div class="results" id="resultsDiv"><div class="empty">👆 先选城市，或直接搜任意地点</div></div>
+</div>
+
+<div class="tab-panel" id="panelSelected">
+  <div class="sel-head"><span class="sel-count" id="selCount">已选 0 个</span><button class="clear-btn" onclick="clearAll()">清空</button></div>
+  <div class="sel-list" id="selList"><div class="empty"><div class="empty-icon">📋</div><div>没有已选地点</div></div></div>
+</div>
+
+<div class="tab-panel" id="panelSettings">
+  <div class="settings">
+    <div class="sg"><div class="sg-title">📅 行程</div>
+      <div class="sg-hint">旅行总天数与出发日期</div>
+      <div class="sr"><label>天数</label><input type="number" id="dayCount" value="3" min="1" max="14"><span class="hint">天</span></div>
+      <div class="sr"><label>出发</label><input type="date" id="startDate"></div>
+      <div class="sr home-row"><label>住址</label>
+        <div class="home-wrap">
+          <div class="home-btns">
+            <button type="button" class="home-btn" id="homePickBtn" onclick="startHomePick()">📍 地图选住址</button>
+            <button type="button" class="home-btn danger" id="homeClearBtn" style="display:none" onclick="removeHome()">🗑️ 清除</button>
+          </div>
+          <div class="home-info" id="homeInfo">每天从住址出发并返回（选填）</div>
+          <div class="home-search" id="homeSearch" style="display:none">
+            <div class="hs-row">
+              <input type="text" id="homeSearchInput" placeholder="🔍 搜索地址/地标（当前城市）" onkeydown="if(event.key==='Enter')homeSearch()">
+              <button type="button" class="hs-btn" onclick="homeSearch()">搜索</button>
+            </div>
+            <div class="hs-list" id="homeSearchResults"></div>
+            <div class="hs-hint">也可直接在右侧地图上点击选位置</div>
+          </div>
+        </div>
+      </div></div>
+    <div class="sg"><div class="sg-title">⏰ 每日节奏</div>
+      <div class="sg-hint">控制每天游玩的松紧程度</div>
+      <div class="sr"><label>节奏</label>
+        <div class="modes">
+          <label class="mode"><input type="radio" name="pace" value="relax">🐢 轻松</label>
+          <label class="mode"><input type="radio" name="pace" value="normal" checked>⚖️ 适中</label>
+          <label class="mode"><input type="radio" name="pace" value="packed">🐎 紧凑</label>
+        </div></div>
+      <div class="sr"><label>时段</label><div class="tr"><input type="time" id="dayStart" value="08:00"><span>至</span><input type="time" id="dayEnd" value="21:00"></div></div>
+      <div class="sr"><label>景点</label><input type="number" id="visitDur" value="1.5" min="0.5" max="6" step="0.5"><span class="hint">h</span></div>
+      <div class="sr"><label>用餐</label><input type="number" id="mealDur" value="1" min="0.5" max="3" step="0.5"><span class="hint">h</span></div></div>
+    <div class="sg"><div class="sg-title">🚗 交通方式</div>
+      <div class="sg-hint">可多选，规划时按距离自动选最合适的</div>
+      <div class="modes">
+        <label class="mode"><input type="checkbox" name="transport" value="walking" checked>🚶 步行</label>
+        <label class="mode"><input type="checkbox" name="transport" value="transit" checked>🚌 公交/地铁</label>
+        <label class="mode"><input type="checkbox" name="transport" value="driving" checked>🚗 驾车</label>
+        <label class="mode"><input type="checkbox" name="transport" value="cycling">🚲 骑行</label>
+        <label class="mode"><input type="checkbox" name="transport" value="taxi">🚕 打车</label>
+      </div>
+      <div class="sr"><label>单程上限</label><input type="number" id="maxTravel" value="60" min="10" max="300"><span class="hint">分</span></div></div>
+    <div class="sg"><div class="sg-title">🎯 偏好</div>
+      <div class="sg-hint">滑块越靠右越看重对应因素</div>
+      <div class="sr"><label>评分权重</label><input type="range" id="prefRating" min="1" max="5" value="4"><span class="hint">1-5</span></div>
+      <div class="sr"><label>就近权重</label><input type="range" id="prefNearby" min="1" max="5" value="3"><span class="hint">1-5</span></div>
+      <div class="cr"><input type="checkbox" id="prefMix" checked><label for="prefMix">三餐与景点交替安排</label></div>
+      <div class="sr"><label>美食偏好</label>
+        <div class="modes">
+          <label class="mode"><input type="checkbox" name="foodPref" value="local" checked>🍲 本地特色</label>
+          <label class="mode"><input type="checkbox" name="foodPref" value="formal" checked>🥢 正餐</label>
+          <label class="mode"><input type="checkbox" name="foodPref" value="snack" checked>🍢 小吃</label>
+          <label class="mode"><input type="checkbox" name="foodPref" value="cafe" checked>☕ 咖啡甜点</label>
+        </div></div>
+      <div class="sr"><label>景点类型</label>
+        <div class="modes">
+          <label class="mode"><input type="checkbox" name="poiPref" value="nature" checked>🌿 自然</label>
+          <label class="mode"><input type="checkbox" name="poiPref" value="history" checked>🏛️ 人文</label>
+          <label class="mode"><input type="checkbox" name="poiPref" value="family" checked>🎡 亲子</label>
+          <label class="mode"><input type="checkbox" name="poiPref" value="shopping" checked>🛍️ 购物</label>
+          <label class="mode"><input type="checkbox" name="poiPref" value="night" checked>🌃 夜景</label>
+        </div></div></div>
+    <button class="gen-btn" onclick="generatePlan()">🚀 智能生成</button>
+    <div class="gen-sub">已选 <span id="planCount">0</span> 个 · <span class="auto-fill" onclick="autoFillSettings()">✨ 一键推荐参数</span></div>
+  </div>
+</div>
+
+<div class="tab-panel" id="panelItinerary">
+  <div id="itineraryView">
+    <div class="empty" id="noItinerary"><div class="empty-icon">📅</div><div>暂无行程</div><div class="empty-sub">选地点后到"设置"生成</div></div>
+    <div id="itineraryContent" style="display:none"><div class="itin-header" id="itinHeader"></div><div class="itin-body" id="itinBody"></div></div>
+  </div>
+</div>
+</div>
+
+<div class="map-area">
+  <div class="map-loading" id="mapLoading"><div class="spinner"></div><div>加载百度地图...</div></div>
+  <div id="mapContainer"></div>
+  <div class="map-toolbar" id="mapToolbar" style="display:none">
+    <button onclick="fitMapToAll()">📍 适配全部</button>
+    <button onclick="toggleRouteVisible()" id="routeToggleBtn">🙈 隐藏路线</button>
+    <span class="map-toolbar-info" id="mapToolbarInfo"></span>
+  </div>
+  <div class="map-legend" id="mapLegend"></div>
+  <div class="home-pick-banner" id="homePickBanner" style="display:none">
+    <span>📍 选点模式：点击地图选择住址，或用左侧搜索框</span>
+    <button type="button" onclick="exitHomePick()">✕ 退出</button>
+  </div>
+  <div class="home-confirm" id="homeConfirmCard" style="display:none">
+    <div class="hc-title">确认住址位置</div>
+    <div class="hc-addr" id="homeConfirmAddr"></div>
+    <div class="hc-btns">
+      <button type="button" class="hc-ok" onclick="confirmHome()">✅ 确认</button>
+      <button type="button" class="hc-no" onclick="cancelHomeConfirm()">取消</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ========== POI 详情弹窗 ========== -->
+<div class="detail-overlay" id="detailOverlay">
+  <div class="detail-modal">
+    <div class="detail-head">
+      <div class="detail-head-info">
+        <div class="detail-icon" id="detailIcon">🏛️</div>
+        <div>
+          <h3 id="detailName">地点详情</h3>
+          <span class="detail-badge" id="detailBadge">景点</span>
+        </div>
+      </div>
+      <button class="city-close" onclick="closePoiDetail()">✕</button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+</div>
+
+<!-- ========== 行程生成 Loading 遮罩 ========== -->
+<div class="gen-loading" id="genLoading" style="display:none">
+  <div class="gl-box">
+    <div class="spinner"></div>
+    <div id="genLoadingText">⏳ 正在获取天气并规划最优行程...</div>
+  </div>
+</div>
+
+<script>
+function onBMapReady() {
+  if (typeof window._mapInit === 'function') { window._mapInit(); }
+  else { var t = setInterval(function() { if (window._mapInit) { clearInterval(t); window._mapInit(); } }, 200); }
+}
+</script>
+<script src="https://api.map.baidu.com/api?v=3.0&ak=pyOtrlORi4Mkdo7Dbn9LQtioRMMskRZ3&callback=onBMapReady"></script>
+<script src="app.js"></script>
+</body>
+</html>
